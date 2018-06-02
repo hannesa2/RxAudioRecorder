@@ -72,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void accept(@NonNull short[] shorts) {
                         try {
-                            observableAudioRecorder.writeShortsToFile(shorts);
+                            observableAudioRecorder.writeDataToFile(shorts);
                         } catch (IOException e) {
                             Log.e("Write", e.getMessage());
                         }

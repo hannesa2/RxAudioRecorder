@@ -194,7 +194,7 @@ public class ObservableAudioRecorder implements ObservableOnSubscribe<short[]>, 
         }
     }
 
-    public void writeShortsToFile(short[] shorts) throws IOException {
+    public void writeDataToFile(short[] shorts) throws IOException {
         for (short aShort : shorts) {
             dataOutputStream.writeByte(aShort & 0xFF);
             dataOutputStream.writeByte((aShort >> 8) & 0xFF);
@@ -250,8 +250,7 @@ public class ObservableAudioRecorder implements ObservableOnSubscribe<short[]>, 
         }
 
         public ObservableAudioRecorder build() {
-            return new ObservableAudioRecorder(this.filePath, this.sampleRate, this.channels,
-                    this.audioSource);
+            return new ObservableAudioRecorder(this.filePath, this.sampleRate, this.channels, this.audioSource);
         }
     }
 }

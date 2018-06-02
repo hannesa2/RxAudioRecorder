@@ -8,7 +8,7 @@ A reactive (RxJava 2) implementation of the AudioRecord API for recording raw (p
 
 ##### Create an instance of RecorderOnSubscribe giving it the path to the file
 ```java
-final String filePath = Environment.getExternalStorageDirectory() + "/sample.wav"; //dummy file 
+final String filePath = Environment.getExternalStorageDirectory() + "/sample.wav";
 ObservableAudioRecorder recorder = new ObservableAudioRecorder.Builder(filePath)
                                                       .sampleRate(22000)       //by default 44100
                                                       .stereo()                //by default mono
@@ -17,10 +17,10 @@ ObservableAudioRecorder recorder = new ObservableAudioRecorder.Builder(filePath)
 ```
 ##### Use the recorder OnSubscribe to create an observable
 ```java
-Observable.create(recorder)#
+Observable.create(recorder)
           .subscribe((Consumer) (shorts) -> {
               ...
-              recorder.writeShortsToFile(shorts);
+              recorder.writeDataToFile(shorts);
           });
 ```
 
@@ -39,11 +39,11 @@ Observable.create(recorder)#
 
 | Name | Description |
 |:----:|:-----------:|
-| writeShortsToFile(shorts) | Writes the short buffers to wave file |
+| writeDataToFile(shorts) | Writes the short buffers to wave file |
 | completeRecording() | Writes the Wave header info to the file (Call it after *stop()* method) |
 
 ## Download 
-Repository available on jitpack
+Repository available on https://jitpack.io
 
 ```Gradle
 allprojects {
@@ -55,7 +55,7 @@ allprojects {
 ```
 ```Gradle
 dependencies {
-    implementation 'com.github.hannesa2:RxAudioRecorder:master-SNAPSHOT'
+    implementation 'com.github.hannesa2:RxAudioRecorder:1.0'
 }
 
 ```
