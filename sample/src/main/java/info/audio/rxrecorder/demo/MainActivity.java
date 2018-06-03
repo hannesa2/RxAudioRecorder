@@ -93,21 +93,20 @@ public class MainActivity extends AppCompatActivity {
     @NeedsPermission({Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE})
     void startRecording() {
         if (observableAudioRecorder.isRecording()) {
-            record.setText("Record");
             try {
                 observableAudioRecorder.stop();
-                //helper method for closing the dataStream, also writes the
-                //wave header
+                //helper method for closing the dataStream, also writes the wave header
                 observableAudioRecorder.completeRecording();
+                record.setText("Record");
             } catch (IOException e) {
                 Log.e("Recorder", e.getMessage());
             }
             play.setVisibility(View.VISIBLE);
             chronometerPersist.stopChronometer();
         } else {
-            record.setText("Stop");
             try {
                 observableAudioRecorder.start();
+                record.setText("Stop");
             } catch (FileNotFoundException e) {
                 Log.e("Recorder Error", e.getMessage());
             }

@@ -78,7 +78,7 @@ public class ObservableAudioRecorder implements ObservableOnSubscribe<short[]>, 
     public String toString() {
         String bits = bitsPerSecond == AudioFormat.ENCODING_PCM_16BIT ? "16BIT" : "8BIT";
         String channelConfig = channels == AudioFormat.CHANNEL_IN_MONO ? "Mono" : "Stereo";
-        return sampleRate + "Hz, bits: " + bits + ", channel: " + channelConfig;
+        return sampleRate + " Hz, bits: " + bits + ", channel: " + channelConfig;
     }
 
     public void stop() {
@@ -131,11 +131,6 @@ public class ObservableAudioRecorder implements ObservableOnSubscribe<short[]>, 
         }
     }
 
-    public boolean isRecording() {
-        return (audioRecorder != null) && (audioRecorder.getRecordingState()
-                == AudioRecord.RECORDSTATE_RECORDING);
-    }
-
     @Override
     protected void finalize() throws Throwable {
         super.finalize();
@@ -147,6 +142,10 @@ public class ObservableAudioRecorder implements ObservableOnSubscribe<short[]>, 
 
         audioRecorder = null;
         thread = null;
+    }
+
+    public boolean isRecording() {
+        return (audioRecorder != null) && (audioRecorder.getRecordingState() == AudioRecord.RECORDSTATE_RECORDING);
     }
 
     public boolean isRecordingStopped() {
@@ -161,8 +160,6 @@ public class ObservableAudioRecorder implements ObservableOnSubscribe<short[]>, 
         }
     }
 
-    //channels -> Mono or Stereo
-    //bitsPerSecond -> 16 or 8 (currently android supports 16 only)
     private void rawToWave(File rawFile, int sampleRate, int bitsPerSecond) throws IOException {
         RandomAccessFile randomAccessFile = new RandomAccessFile(rawFile, "rw");
         int channels = this.channels == AudioFormat.CHANNEL_IN_MONO ? 1 : 2;
