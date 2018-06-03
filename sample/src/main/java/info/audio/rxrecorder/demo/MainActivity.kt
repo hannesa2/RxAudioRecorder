@@ -39,7 +39,6 @@ class MainActivity : AppCompatActivity() {
         val filePath = Environment.getExternalStorageDirectory().toString() + FILE_NAME
 
         observableAudioRecorder = ObservableAudioRecorder.Builder(MediaRecorder.AudioSource.CAMCORDER)
-                .file(Environment.getExternalStorageDirectory().absolutePath + "/sample.wav")
                 .file(filePath)
                 .build()
 
