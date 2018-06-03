@@ -8,20 +8,19 @@ A reactive (RxJava 2) implementation of the AudioRecord API for recording raw (p
 
 ##### Create an instance of RecorderOnSubscribe giving it the path to the file
 ```java
-final String filePath = Environment.getExternalStorageDirectory() + "/sample.wav";
-ObservableAudioRecorder recorder = new ObservableAudioRecorder.Builder(filePath)
-                                                      .sampleRate(22000)       //by default 44100
-                                                      .stereo()                //by default mono
-                                                      .audioSourceCamcorder()  //by default MIC
+ObservableAudioRecorder recorder = new ObservableAudioRecorder.Builder(MediaRecorder.AudioSource.CAMCORDER)
+                                                      .sampleRate(22050)
+                                                      .stereo()
+                                                      .file(Environment.getExternalStorageDirectory() + "/sample.wav")
                                                       .build();
 ```
 ##### Use the recorder OnSubscribe to create an observable
 ```java
 Observable.create(recorder)
-          .subscribe((Consumer) (shorts) -> {
+          .subscribe(shorts -> {
               ...
               recorder.writeDataToFile(shorts);
-          });
+          }, throwable -> errorhandling(throwable));
 ```
 
 #### After setting up the Observer, manipulate the recording-process by using these methods

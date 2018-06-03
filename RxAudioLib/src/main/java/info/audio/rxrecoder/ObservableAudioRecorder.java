@@ -2,7 +2,7 @@ package info.audio.rxrecoder;
 
 import android.media.AudioFormat;
 import android.media.AudioRecord;
-import android.media.MediaRecorder;
+import android.util.Log;
 
 import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;
@@ -25,6 +25,7 @@ public class ObservableAudioRecorder implements ObservableOnSubscribe<short[]>, 
     private final int channels;
     private final int audioSource;
     private final Object mPauseLock;
+    private final int bitsPerSecond;
     private String filePath;
     private AudioRecord audioRecorder = null;
     private int bufferSize;
@@ -34,11 +35,12 @@ public class ObservableAudioRecorder implements ObservableOnSubscribe<short[]>, 
     private Thread thread;
     private DataOutputStream dataOutputStream;
 
-    private ObservableAudioRecorder(String filePath, int sampleRate, int channels, int audioSource) {
+    private ObservableAudioRecorder(String filePath, int sampleRate, int channels, int audioSource, int bitsPerSecond) {
         this.filePath = filePath;
         this.sampleRate = sampleRate;
         this.channels = channels == 1 ? AudioFormat.CHANNEL_IN_MONO : AudioFormat.CHANNEL_IN_STEREO;
         this.audioSource = audioSource;
+        this.bitsPerSecond = bitsPerSecond;
 
         mPauseLock = new Object();
         isPaused = false;
@@ -50,12 +52,14 @@ public class ObservableAudioRecorder implements ObservableOnSubscribe<short[]>, 
     }
 
     public void start() throws RuntimeException, FileNotFoundException {
-        this.dataOutputStream = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(this.filePath)));
+        if (filePath != null) {
+            this.dataOutputStream = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(filePath)));
+        }
 
-        this.bufferSize = AudioRecord.getMinBufferSize(sampleRate, channels, AudioFormat.ENCODING_PCM_16BIT);
+        this.bufferSize = AudioRecord.getMinBufferSize(sampleRate, channels, bitsPerSecond);
 
         if (bufferSize != AudioRecord.ERROR_BAD_VALUE && bufferSize != AudioRecord.ERROR) {
-            audioRecorder = new AudioRecord(audioSource, sampleRate, channels, AudioFormat.ENCODING_PCM_16BIT, bufferSize * 10);
+            audioRecorder = new AudioRecord(audioSource, sampleRate, channels, bitsPerSecond, bufferSize * 10);
 
             if (audioRecorder.getState() == AudioRecord.STATE_INITIALIZED) {
                 audioRecorder.startRecording();
@@ -68,6 +72,13 @@ public class ObservableAudioRecorder implements ObservableOnSubscribe<short[]>, 
         } else {
             throw new RuntimeException("Unable to get minimum buffer size");
         }
+    }
+
+    @Override
+    public String toString() {
+        String bits = bitsPerSecond == AudioFormat.ENCODING_PCM_16BIT ? "16BIT" : "8BIT";
+        String channelConfig = channels == AudioFormat.CHANNEL_IN_MONO ? "Mono" : "Stereo";
+        return sampleRate + "Hz, bits: " + bits + ", channel: " + channelConfig;
     }
 
     public void stop() {
@@ -196,17 +207,23 @@ public class ObservableAudioRecorder implements ObservableOnSubscribe<short[]>, 
 
     public void writeDataToFile(short[] shorts) throws IOException {
         for (short aShort : shorts) {
-            dataOutputStream.writeByte(aShort & 0xFF);
-            dataOutputStream.writeByte((aShort >> 8) & 0xFF);
+            if (dataOutputStream != null) {
+                dataOutputStream.writeByte(aShort & 0xFF);
+                dataOutputStream.writeByte((aShort >> 8) & 0xFF);
+            }
         }
     }
 
     public void completeRecording() throws IOException {
-        dataOutputStream.flush();
-        dataOutputStream.close();
+        if (dataOutputStream != null) {
+            dataOutputStream.flush();
+            dataOutputStream.close();
+        }
 
-        File file = new File(filePath);
-        convertFileToWave(file);
+        if (filePath != null) {
+            File file = new File(filePath);
+            convertFileToWave(file);
+        }
     }
 
     public static class Builder {
@@ -214,18 +231,20 @@ public class ObservableAudioRecorder implements ObservableOnSubscribe<short[]>, 
         int bitsPerSecond;
         int channels;
         int audioSource;
-        String filePath;
+        String filePath = null;
 
-        public Builder(String filePath) {
-            this.filePath = filePath;
-            sampleRate = 44100;
-            bitsPerSecond = AudioFormat.ENCODING_PCM_16BIT;
-            audioSource = MediaRecorder.AudioSource.MIC;
-            channels = 1;
+        public Builder(int audioSource) {
+            this.audioSource = audioSource;
+            findMinimalAudioRate();
         }
 
         public Builder sampleRate(int sampleRate) {
             this.sampleRate = sampleRate;
+            return this;
+        }
+
+        public Builder file(String filePath) {
+            this.filePath = filePath;
             return this;
         }
 
@@ -239,18 +258,42 @@ public class ObservableAudioRecorder implements ObservableOnSubscribe<short[]>, 
             return this;
         }
 
-        public Builder audioSourceMic() {
-            audioSource = MediaRecorder.AudioSource.MIC;
-            return this;
-        }
-
-        public Builder audioSourceCamcorder() {
-            audioSource = MediaRecorder.AudioSource.CAMCORDER;
+        public Builder audioSource(int audioSource) {
+            this.audioSource = audioSource;
             return this;
         }
 
         public ObservableAudioRecorder build() {
-            return new ObservableAudioRecorder(this.filePath, this.sampleRate, this.channels, this.audioSource);
+            return new ObservableAudioRecorder(filePath, this.sampleRate, this.channels, this.audioSource, bitsPerSecond);
+        }
+
+        private void findMinimalAudioRate() {
+            int[] mSampleRates = new int[]{8000, 11025, 22050, 44100};
+            for (int rate : mSampleRates) {
+                for (short audioFormat : new short[]{AudioFormat.ENCODING_PCM_8BIT, AudioFormat.ENCODING_PCM_16BIT}) {
+                    for (short channelConfig : new short[]{AudioFormat.CHANNEL_IN_MONO, AudioFormat.CHANNEL_IN_STEREO}) {
+                        try {
+                            Log.d("audioRate", "Attempting rate " + rate + "Hz, bits: " + audioFormat + ", channel: " + channelConfig);
+                            int bufferSize = AudioRecord.getMinBufferSize(rate, channelConfig, audioFormat);
+
+                            if (bufferSize != AudioRecord.ERROR_BAD_VALUE) {
+                                // check if we can instantiate and have a success
+                                AudioRecord recorder = new AudioRecord(audioSource, rate, channelConfig, audioFormat, bufferSize);
+
+                                if (recorder.getState() == AudioRecord.STATE_INITIALIZED) {
+                                    sampleRate = rate;
+                                    bitsPerSecond = audioFormat;
+                                    channels = channelConfig;
+                                    recorder.stop();
+                                    return;
+                                }
+                            }
+                        } catch (Exception e) {
+                            Log.e("audioRate", rate + "Exception, keep trying.", e);
+                        }
+                    }
+                }
+            }
         }
     }
 }

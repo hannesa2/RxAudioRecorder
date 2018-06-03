@@ -2,6 +2,7 @@ package info.audio.rxrecorder.demo;
 
 import android.Manifest;
 import android.content.Intent;
+import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -22,7 +23,6 @@ import info.audio.rxrecoder.ObservableAudioRecorder;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import library.minimize.com.chronometerpersist.ChronometerPersist;
 import permissions.dispatcher.NeedsPermission;
@@ -36,8 +36,6 @@ public class MainActivity extends AppCompatActivity {
 
     private Button record;
     private Button play;
-    private Chronometer chronometer;
-    private TextView filePathDisplay;
 
     private ChronometerPersist chronometerPersist;
 
@@ -46,51 +44,35 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        filePathDisplay = findViewById(R.id.textViewPath);
-        chronometer = findViewById(R.id.chronometer);
+        TextView audioFormat = findViewById(R.id.textViewAudioFormat);
+        Chronometer chronometer = findViewById(R.id.chronometer);
 
         chronometerPersist = ChronometerPersist.getInstance(chronometer, getSharedPreferences("MyPrefs", MODE_PRIVATE));
         final String filePath = Environment.getExternalStorageDirectory() + FILE_NAME;
 
-        filePathDisplay.setText(filePath);
+        observableAudioRecorder = new ObservableAudioRecorder.Builder(MediaRecorder.AudioSource.CAMCORDER)
+                .file(filePath)
+                .build();
 
-        observableAudioRecorder = new ObservableAudioRecorder.Builder(filePath).audioSourceCamcorder().build();
+        audioFormat.setText(observableAudioRecorder.toString());
 
         play = findViewById(R.id.buttonPlay);
         record = findViewById(R.id.buttonRecord);
-        record.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                MainActivityPermissionsDispatcher.startRecordingWithCheck(MainActivity.this);
-            }
-        });
+        record.setOnClickListener(view -> MainActivityPermissionsDispatcher.startRecordingWithCheck(MainActivity.this));
 
         subscription = Observable.create(observableAudioRecorder)
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<short[]>() {
-                    @Override
-                    public void accept(@NonNull short[] shorts) {
-                        try {
-                            observableAudioRecorder.writeDataToFile(shorts);
-                        } catch (IOException e) {
-                            Log.e("Write", e.getMessage());
-                        }
+                .subscribe(shorts -> {
+                    try {
+                        observableAudioRecorder.writeDataToFile(shorts);
+                    } catch (IOException e) {
+                        Log.e("Write", e.getMessage());
                     }
-                }, new Consumer<Throwable>() {
-                    @Override
-                    public void accept(Throwable throwable) {
-                        Log.e("Error", throwable.getMessage());
-                    }
-                });
+                }, throwable -> Log.e("Error", throwable.getMessage()));
 
         play.setVisibility(View.GONE);
-        play.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                playFile();
-            }
-        });
+        play.setOnClickListener(view -> playFile());
     }
 
     @Override
