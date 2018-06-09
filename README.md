@@ -1,6 +1,7 @@
 # RxJava2 Reactive Audio Recorder
 
 [![GitHub license](https://img.shields.io/badge/license-Apache%20Version%202.0-blue.svg)](https://github.com/sbrukhanda/fragmentviewpager/blob/master/LICENSE.txt)
+[![](https://jitpack.io/v/hannesa2/RxAudioRecorder.svg)](https://jitpack.io/#hannesa2/RxAudioRecorder)
 
 A reactive (RxJava 2) implementation of the AudioRecord API for recording raw (pcm) audio-data
 
