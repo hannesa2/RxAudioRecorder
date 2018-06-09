@@ -43,7 +43,7 @@ dependencies {
     }
     implementation project(':RxAudioLib')
     implementation "io.reactivex.rxjava2:rxandroid:2.0.2"
-    implementation "io.reactivex.rxjava2:rxjava:2.1.13"
+    implementation "io.reactivex.rxjava2:rxjava:2.1.14"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
 repositories {
