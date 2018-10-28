@@ -63,7 +63,7 @@ Observable.create(observableAudioRecorder)
 | completeRecording() | Writes the Wave header info to the file (Call it after *stop()* method) |
 
 ## Download 
-Repository available on https://jitpack.io
+Repository available on https://jitpack.io/#hannesa2/RxAudioRecorder
 
 ```Gradle
 allprojects {
@@ -75,7 +75,7 @@ allprojects {
 ```
 ```Gradle
 dependencies {
-    implementation 'com.github.hannesa2:RxAudioRecorder:1.0'
+    implementation 'com.github.hannesa2:RxAudioRecorder:2.0'
 }
 
 ```
