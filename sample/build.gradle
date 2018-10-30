@@ -27,21 +27,15 @@ android {
 }
 
 dependencies {
-    androidTestImplementation('androidx.test.espresso:espresso-core:3.1.0-beta02', {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    })
-    implementation 'androidx.appcompat:appcompat:1.0.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.0-alpha2'
-    implementation('com.github.hotchemi:permissionsdispatcher:3.2.0') {
-        exclude module: "support-v13"
-    }
-    kapt 'com.github.hotchemi:permissionsdispatcher-processor:3.2.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
+    implementation 'androidx.appcompat:appcompat:1.0.2'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.0-alpha3'
+    implementation 'com.github.hotchemi:permissionsdispatcher:4.1.0'
+    kapt 'com.github.hotchemi:permissionsdispatcher-processor:4.1.0'
     testImplementation 'junit:junit:4.12'
-    implementation('com.minimize.library:chronometerpersist:1.1.0') {
-        exclude module: "support-v7"
-    }
+    implementation 'com.minimize.library:chronometerpersist:1.1.0'
     implementation project(':RxAudioLib')
     implementation "io.reactivex.rxjava2:rxandroid:2.1.0"
-    implementation "io.reactivex.rxjava2:rxjava:2.2.2"
+    implementation "io.reactivex.rxjava2:rxjava:2.2.5"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
