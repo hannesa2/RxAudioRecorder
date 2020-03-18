@@ -5,6 +5,24 @@
 
 A reactive (RxJava 2) implementation of the AudioRecord API for recording raw (pcm) audio-data
 
+## Download 
+Repository available on https://jitpack.io/#hannesa2/RxAudioRecorder
+
+```Gradle
+allprojects {
+    repositories {
+        ...
+        maven { url 'https://jitpack.io' }
+    }
+}
+```
+```Gradle
+dependencies {
+    implementation 'com.github.hannesa2:RxAudioRecorder:2.2'
+}
+
+```
+
 ### Usage
 
 ##### Create an instance of RecorderOnSubscribe giving it the path to the file
@@ -61,24 +79,6 @@ Observable.create(observableAudioRecorder)
 |:----:|:-----------:|
 | writeDataToFile(shorts) | Writes the short buffers to wave file |
 | completeRecording() | Writes the Wave header info to the file (Call it after *stop()* method) |
-
-## Download 
-Repository available on https://jitpack.io/#hannesa2/RxAudioRecorder
-
-```Gradle
-allprojects {
-    repositories {
-        ...
-        maven { url 'https://jitpack.io' }
-    }
-}
-```
-```Gradle
-dependencies {
-    implementation 'com.github.hannesa2:RxAudioRecorder:2.2'
-}
-
-```
 
 ## License 
 ```
