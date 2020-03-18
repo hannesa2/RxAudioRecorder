@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -14,7 +15,8 @@
         app:layout_constraintBottom_toBottomOf="@+id/activity_main"
         app:layout_constraintLeft_toLeftOf="@+id/activity_main"
         app:layout_constraintRight_toRightOf="@+id/activity_main"
-        app:layout_constraintTop_toTopOf="@+id/activity_main" />
+        app:layout_constraintTop_toTopOf="@+id/activity_main"
+        tools:ignore="HardcodedText" />
 
     <Chronometer
         android:id="@+id/chronometer"
@@ -27,7 +29,8 @@
         app:layout_constraintLeft_toLeftOf="@+id/activity_main"
         app:layout_constraintRight_toRightOf="@+id/activity_main"
         app:layout_constraintTop_toTopOf="@+id/activity_main"
-        android:gravity="center_horizontal" />
+        android:gravity="center_horizontal"
+        tools:ignore="HardcodedText" />
 
     <TextView
         android:id="@+id/textViewAudioFormat"
@@ -41,7 +44,8 @@
         app:layout_constraintLeft_toLeftOf="@+id/activity_main"
         app:layout_constraintRight_toRightOf="@+id/activity_main"
         app:layout_constraintTop_toBottomOf="@+id/chronometer"
-        android:gravity="center_horizontal" />
+        android:gravity="center_horizontal"
+        tools:ignore="HardcodedText" />
 
     <Button
         android:id="@+id/buttonPlay"
@@ -52,5 +56,6 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="@+id/buttonRecord"
         app:layout_constraintRight_toRightOf="@+id/buttonRecord"
-        app:layout_constraintTop_toBottomOf="@+id/buttonRecord" />
+        app:layout_constraintTop_toBottomOf="@+id/buttonRecord"
+        tools:ignore="HardcodedText" />
 </androidx.constraintlayout.widget.ConstraintLayout>
