@@ -26,7 +26,8 @@
         android:textSize="24sp"
         app:layout_constraintLeft_toLeftOf="@+id/activity_main"
         app:layout_constraintRight_toRightOf="@+id/activity_main"
-        app:layout_constraintTop_toTopOf="@+id/activity_main" />
+        app:layout_constraintTop_toTopOf="@+id/activity_main"
+        android:gravity="center_horizontal" />
 
     <TextView
         android:id="@+id/textViewAudioFormat"
@@ -39,7 +40,8 @@
         app:layout_constraintBottom_toTopOf="@+id/buttonRecord"
         app:layout_constraintLeft_toLeftOf="@+id/activity_main"
         app:layout_constraintRight_toRightOf="@+id/activity_main"
-        app:layout_constraintTop_toBottomOf="@+id/chronometer" />
+        app:layout_constraintTop_toBottomOf="@+id/chronometer"
+        android:gravity="center_horizontal" />
 
     <Button
         android:id="@+id/buttonPlay"
