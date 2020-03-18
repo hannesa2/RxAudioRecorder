@@ -29,7 +29,7 @@ android {
 dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
     implementation 'androidx.appcompat:appcompat:1.1.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.0-beta2'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.0-beta4'
     implementation 'com.github.hotchemi:permissionsdispatcher:4.1.0'
     kapt 'com.github.hotchemi:permissionsdispatcher-processor:4.1.0'
     testImplementation 'junit:junit:4.12'
