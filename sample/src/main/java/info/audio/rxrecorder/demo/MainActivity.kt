@@ -44,7 +44,7 @@ class MainActivity : AppCompatActivity() {
 
         textViewAudioFormat.text = observableAudioRecorder.toString()
 
-        buttonRecord.setOnClickListener { view -> startRecordingWithPermissionCheck() }
+        buttonRecord.setOnClickListener { startRecordingWithPermissionCheck() }
 
         subscription = Observable.create(observableAudioRecorder)
                 .subscribeOn(Schedulers.computation())
@@ -58,7 +58,7 @@ class MainActivity : AppCompatActivity() {
                 }) { throwable -> Log.e("Error", throwable.message) }
 
         buttonPlay.visibility = View.GONE
-        buttonPlay.setOnClickListener { view -> playFile() }
+        buttonPlay.setOnClickListener { playFile() }
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
@@ -101,7 +101,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun playFile() {
         val intent = Intent()
-        intent.action = android.content.Intent.ACTION_VIEW
+        intent.action = Intent.ACTION_VIEW
         val file = File(Environment.getExternalStorageDirectory(), FILE_NAME)
         val fileUri = FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID + ".audioprovider", file)
         intent.setDataAndType(fileUri, "audio/*")
@@ -109,6 +109,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     companion object {
-        private val FILE_NAME = "/sample.wav"
+        private const val FILE_NAME = "/sample.wav"
     }
 }
