@@ -75,7 +75,7 @@ allprojects {
 ```
 ```Gradle
 dependencies {
-    implementation 'com.github.hannesa2:RxAudioRecorder:2.0'
+    implementation 'com.github.hannesa2:RxAudioRecorder:2.2'
 }
 
 ```
