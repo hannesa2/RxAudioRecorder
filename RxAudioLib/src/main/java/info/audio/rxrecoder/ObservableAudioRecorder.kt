@@ -14,7 +14,7 @@ import java.io.*
  */
 open class ObservableAudioRecorder private constructor(private val filePath: String?, private val sampleRate: Int, channels: Int, private val audioSource: Int, private val bitsPerSecond: Int) : ObservableOnSubscribe<ShortArray>, Runnable {
     private val channels: Int
-    private val mPauseLock = java.lang.Object() //  instead of Any we use a Java class, there we can .wait() and .notifyAll()
+    private val mPauseLock = Object() //  instead of Any we use a Java class, there we can .wait() and .notifyAll()
     private var audioRecorder: AudioRecord? = null
     private var bufferSize: Int = 0
     private var isRecording = false
