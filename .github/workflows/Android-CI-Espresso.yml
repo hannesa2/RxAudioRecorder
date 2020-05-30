@@ -28,12 +28,8 @@ jobs:
           java-version: ${{ matrix.java_version }}
       - name: Install Android SDK
         uses: malinskiy/action-android/install-sdk@release/0.0.5
-      - name: Configure Gradle
-        # Initial gradle configuration, install dependencies, etc
-        run: ./gradlew help
       - name: Build project
         run: ./gradlew build --stacktrace
-      # TODO split test and instrumentation into parallel builds
       - name: Run tests
         run: ./gradlew test --stacktrace
       - name: Run instrumentation tests
@@ -48,12 +44,10 @@ jobs:
         with:
           name: Espresso-report
           path: sample/build/reports/androidTests/connected
-      - name: Reclaim memory
-        run: ./gradlew --stop && jps|grep -E 'KotlinCompileDaemon|GradleDaemon'| awk '{print $1}'| xargs kill -9
       - name: Final checks
         run: ./gradlew check --stacktrace
       - name: Archive Lint report
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v2
         with:
           name: Lint-report
           path: sample/build/reports/lint-results.html
