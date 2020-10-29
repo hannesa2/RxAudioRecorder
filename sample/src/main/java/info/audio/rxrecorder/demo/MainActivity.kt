@@ -26,32 +26,34 @@ import java.io.IOException
 
 @RuntimePermissions
 class MainActivity : AppCompatActivity() {
-    private var subscription: Disposable? = null
-    private var observableAudioRecorder: ObservableAudioRecorder? = null
+    private lateinit var filePath: String
+    private lateinit var subscription: Disposable
+    private lateinit var observableAudioRecorder: ObservableAudioRecorder
 
-    private var chronometerPersist: ChronometerPersist? = null
+    private lateinit var chronometerPersist: ChronometerPersist
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         chronometerPersist = ChronometerPersist.getInstance(chronometer, getSharedPreferences("Prefs", Context.MODE_PRIVATE))
-        val filePath = Environment.getExternalStorageDirectory().toString() + FILE_NAME
+        filePath = this.externalCacheDir?.absolutePath + FILE_NAME
 
         observableAudioRecorder = ObservableAudioRecorder.Builder(MediaRecorder.AudioSource.CAMCORDER)
                 .file(filePath)
+                .findBestAudioRate()
                 .build()
 
         textViewAudioFormat.text = observableAudioRecorder.toString()
 
-        buttonRecord.setOnClickListener { startRecordingWithPermissionCheck() }
+        buttonRecord.setOnClickListener { toggleRecordingWithPermissionCheck() }
 
         subscription = Observable.create(observableAudioRecorder)
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ shorts ->
                     try {
-                        observableAudioRecorder!!.writeDataToFile(shorts)
+                        observableAudioRecorder.writeDataToFile(shorts)
                     } catch (e: IOException) {
                         Log.e("Write", "IOException")
                     }
@@ -68,44 +70,48 @@ class MainActivity : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
-        observableAudioRecorder?.stop()
-        subscription?.dispose()
+        observableAudioRecorder.stop()
+        subscription.dispose()
     }
 
     @SuppressLint("SetTextI18n")
     @NeedsPermission(Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-    internal fun startRecording() {
-        if (observableAudioRecorder!!.isRecording()) {
+    internal fun toggleRecording() {
+        buttonPlay.visibility = View.VISIBLE
+        if (observableAudioRecorder.isRecording()) {
+            buttonPlay.isEnabled = true
             try {
-                observableAudioRecorder!!.stop()
+                buttonRecord.text = "Record"
+                observableAudioRecorder.stop()
                 //helper method for closing the dataStream, also writes the wave header
-                observableAudioRecorder!!.completeRecording()
-                buttonPlay.text = "Record"
+                observableAudioRecorder.completeRecording()
             } catch (e: IOException) {
                 Log.e("Recorder", "IOException")
             }
 
-            buttonPlay.visibility = View.VISIBLE
-            chronometerPersist!!.stopChronometer()
+            buttonPlay.text = "Play"
+            chronometerPersist.stopChronometer()
         } else {
+            buttonPlay.isEnabled = false
             try {
-                observableAudioRecorder!!.start()
-                buttonPlay.text = "Stop"
+                observableAudioRecorder.start()
+                buttonRecord.text = "Stop"
             } catch (e: FileNotFoundException) {
                 Log.e("Recorder Error", "FileNotFoundException")
             }
 
-            chronometerPersist!!.startChronometer()
+            chronometerPersist.startChronometer()
         }
     }
 
     private fun playFile() {
         val intent = Intent()
         intent.action = Intent.ACTION_VIEW
-        val file = File(Environment.getExternalStorageDirectory(), FILE_NAME)
-        val fileUri = FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID + ".audioprovider", file)
-        intent.setDataAndType(fileUri, "audio/*")
-        startActivity(intent)
+        val fileUri = FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID + ".audioprovider", File(filePath))
+        intent.setDataAndType(fileUri, contentResolver.getType(fileUri))
+        intent.putExtra(Intent.EXTRA_STREAM, fileUri)
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        startActivity(Intent.createChooser(intent, "Play Sound File"))
     }
 
     companion object {

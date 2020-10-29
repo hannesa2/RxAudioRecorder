@@ -248,7 +248,7 @@ open class ObservableAudioRecorder private constructor(private val filePath: Str
             return ObservableAudioRecorder(filePath, this.sampleRate, this.channels, this.audioSource, bitsPerSecond)
         }
 
-        private fun findMinimalAudioRate() {
+        private fun findMinimalAudioRate(): Builder {
             val mSampleRates = intArrayOf(8000, 11025, 22050, 44100)
             for (rate in mSampleRates) {
                 for (audioFormat in shortArrayOf(AudioFormat.ENCODING_PCM_8BIT.toShort(), AudioFormat.ENCODING_PCM_16BIT.toShort())) {
@@ -266,7 +266,7 @@ open class ObservableAudioRecorder private constructor(private val filePath: Str
                                     bitsPerSecond = audioFormat.toInt()
                                     channels = channelConfig.toInt()
                                     recorder.stop()
-                                    return
+                                    return this
                                 }
                             }
                         } catch (e: Exception) {
@@ -276,6 +276,38 @@ open class ObservableAudioRecorder private constructor(private val filePath: Str
                     }
                 }
             }
+            return this
+        }
+
+        fun findBestAudioRate(): Builder {
+            val mSampleRates = intArrayOf(8000, 11025, 22050, 44100)
+            for (rate in mSampleRates.sortedDescending()) {
+                for (audioFormat in shortArrayOf(AudioFormat.ENCODING_PCM_8BIT.toShort(), AudioFormat.ENCODING_PCM_16BIT.toShort()).sortedDescending()) {
+                    for (channelConfig in shortArrayOf(AudioFormat.CHANNEL_IN_MONO.toShort(), AudioFormat.CHANNEL_IN_STEREO.toShort()).sortedDescending()) {
+                        try {
+                            Log.d("audioRate", "Attempting rate " + rate + "Hz, bits: " + audioFormat + ", channel: " + channelConfig)
+                            val bufferSize = AudioRecord.getMinBufferSize(rate, channelConfig.toInt(), audioFormat.toInt())
+
+                            if (bufferSize != AudioRecord.ERROR_BAD_VALUE) {
+                                // check if we can instantiate and have a success
+                                val recorder = AudioRecord(audioSource, rate, channelConfig.toInt(), audioFormat.toInt(), bufferSize)
+
+                                if (recorder.state == AudioRecord.STATE_INITIALIZED) {
+                                    sampleRate = rate
+                                    bitsPerSecond = audioFormat.toInt()
+                                    channels = channelConfig.toInt()
+                                    recorder.stop()
+                                    return this
+                                }
+                            }
+                        } catch (e: Exception) {
+                            Log.e("audioRate", rate.toString() + "Exception, keep trying.", e)
+                        }
+
+                    }
+                }
+            }
+            return this
         }
     }
 }
