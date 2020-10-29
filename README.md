@@ -26,16 +26,6 @@ dependencies {
 
 ### Usage
 
-##### Create an instance of RecorderOnSubscribe giving it the path to the file
-###### Java
-```java
-ObservableAudioRecorder recorder = new ObservableAudioRecorder.Builder(MediaRecorder.AudioSource.CAMCORDER)
-                                          .sampleRate(22050)
-                                          .stereo()
-                                          .file(Environment.getExternalStorageDirectory() + "/sample.wav")
-                                          .build();
-```
-###### Kotlin
 ```kotlin
 ObservableAudioRecorder recorder = ObservableAudioRecorder.Builder(MediaRecorder.AudioSource.CAMCORDER)
                                       .sampleRate(22050)
@@ -46,15 +36,7 @@ ObservableAudioRecorder recorder = ObservableAudioRecorder.Builder(MediaRecorder
 
 
 ##### Use the recorder OnSubscribe to create an observable
-###### Java
-```java
-Observable.create(recorder)
-          .subscribe(shorts -> {
-              ...
-              recorder.writeDataToFile(shorts);
-          }, throwable -> errorhandling(throwable));
-```
-###### Kotlin
+
 ```kotlin
 Observable.create(observableAudioRecorder)
         .subscribe({ shorts ->
