@@ -7,10 +7,10 @@ import android.content.Intent
 import android.media.MediaRecorder
 import android.os.Bundle
 import android.os.Environment
-import androidx.core.content.FileProvider
-import androidx.appcompat.app.AppCompatActivity
 import android.util.Log
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.FileProvider
 import info.audio.rxrecoder.ObservableAudioRecorder
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -53,9 +53,9 @@ class MainActivity : AppCompatActivity() {
                     try {
                         observableAudioRecorder!!.writeDataToFile(shorts)
                     } catch (e: IOException) {
-                        Log.e("Write", e.message)
+                        Log.e("Write", "IOException")
                     }
-                }) { throwable -> Log.e("Error", throwable.message) }
+                }) { throwable -> Log.e("Error", "${throwable.message}") }
 
         buttonPlay.visibility = View.GONE
         buttonPlay.setOnClickListener { playFile() }
@@ -82,7 +82,7 @@ class MainActivity : AppCompatActivity() {
                 observableAudioRecorder!!.completeRecording()
                 buttonPlay.text = "Record"
             } catch (e: IOException) {
-                Log.e("Recorder", e.message)
+                Log.e("Recorder", "IOException")
             }
 
             buttonPlay.visibility = View.VISIBLE
@@ -92,7 +92,7 @@ class MainActivity : AppCompatActivity() {
                 observableAudioRecorder!!.start()
                 buttonPlay.text = "Stop"
             } catch (e: FileNotFoundException) {
-                Log.e("Recorder Error", e.message)
+                Log.e("Recorder Error", "FileNotFoundException")
             }
 
             chronometerPersist!!.startChronometer()
