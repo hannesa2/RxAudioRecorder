@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.Intent
 import android.media.MediaRecorder
 import android.os.Bundle
-import android.os.Environment
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
@@ -36,7 +35,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        chronometerPersist = ChronometerPersist.getInstance(chronometer, getSharedPreferences("Prefs", Context.MODE_PRIVATE))
+        chronometerPersist = ChronometerPersist.getInstance(chronometer, "abc", getSharedPreferences("Prefs", Context.MODE_PRIVATE))
         filePath = this.externalCacheDir?.absolutePath + FILE_NAME
 
         observableAudioRecorder = ObservableAudioRecorder.Builder(MediaRecorder.AudioSource.CAMCORDER)
@@ -46,7 +45,9 @@ class MainActivity : AppCompatActivity() {
 
         textViewAudioFormat.text = observableAudioRecorder.toString()
 
-        buttonRecord.setOnClickListener { toggleRecordingWithPermissionCheck() }
+        buttonRecord.setOnClickListener {
+            //toggleRecordingWithPermissionCheck()
+        }
 
         subscription = Observable.create(observableAudioRecorder)
                 .subscribeOn(Schedulers.computation())
@@ -65,7 +66,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        onRequestPermissionsResult(requestCode, grantResults)
+        onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
     override fun onPause() {
