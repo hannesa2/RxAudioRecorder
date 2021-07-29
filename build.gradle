@@ -10,11 +10,6 @@ buildscript {
     }
 }
 
-// Jitpack can't handle this https://github.com/jitpack/jitpack.io/issues/3725
-//plugins {
-//    id "com.github.ben-manes.versions" version "0.28.0" // ./gradlew dependencyUpdates
-//}
-
 allprojects {
     repositories {
         google()
