@@ -1,3 +1,5 @@
+jdk:
+ - openjdk11
 install:
  - ./gradlew :RxAudioLib:build :RxAudioLib:publishToMavenLocal -x :RxAudioLib:test
  - find . -name "*.aar"
