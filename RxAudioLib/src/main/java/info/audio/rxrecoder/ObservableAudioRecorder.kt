@@ -46,11 +46,12 @@ open class ObservableAudioRecorder private constructor(private val filePath: Str
         if (bufferSize != AudioRecord.ERROR_BAD_VALUE && bufferSize != AudioRecord.ERROR) {
             audioRecorder = AudioRecord(audioSource, sampleRate, channels, bitsPerSecond, bufferSize * 10)
 
-            if (audioRecorder!!.state == AudioRecord.STATE_INITIALIZED) {
-                audioRecorder!!.startRecording()
+            if (audioRecorder?.state == AudioRecord.STATE_INITIALIZED) {
+                audioRecorder?.startRecording()
                 isRecording = true
-                thread = Thread(this)
-                thread!!.start()
+                thread = Thread(this).apply {
+                    start()
+                }
             } else {
                 throw RuntimeException("Unable to create AudioRecord instance")
             }
@@ -182,7 +183,7 @@ open class ObservableAudioRecorder private constructor(private val filePath: Str
     @Throws(IOException::class)
     private fun writeString(output: RandomAccessFile, value: String) {
         for (i in 0 until value.length) {
-            output.write(value[i].toInt())
+            output.write(value[i].code)
         }
     }
 
