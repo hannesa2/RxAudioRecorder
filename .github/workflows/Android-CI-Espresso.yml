@@ -10,7 +10,7 @@ on:
 
 jobs:
   build:
-    name: JDK ${{ matrix.java_version }}
+    name: build pull request
     runs-on: macOS-latest
     strategy:
       matrix:
