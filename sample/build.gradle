@@ -19,6 +19,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    namespace 'info.audio.rxrecorder.demo'
 }
 
 dependencies {
