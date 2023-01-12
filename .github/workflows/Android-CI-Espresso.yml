@@ -24,13 +24,13 @@ jobs:
           distribution: "adopt"
           java-version: ${{ matrix.java_version }}
       - name: Install Android SDK
-        uses: malinskiy/action-android/install-sdk@release/0.1.2
+        uses: malinskiy/action-android/install-sdk@release/0.1.4
       - name: Build project
         run: ./gradlew build
       - name: Run tests
         run: ./gradlew test
       - name: Run instrumentation tests
-        uses: malinskiy/action-android/emulator-run-cmd@release/0.1.2
+        uses: malinskiy/action-android/emulator-run-cmd@release/0.1.4
         with:
           cmd: ./gradlew cAT
           api: 21
@@ -48,4 +48,4 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: Lint-report
-          path: sample/build/reports/lint-results.html
+          path: sample/build/reports/lint-results*.html
