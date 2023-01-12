@@ -11,11 +11,11 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import info.audio.rxrecoder.ObservableAudioRecorder
+import info.audio.rxrecorder.demo.databinding.ActivityMainBinding
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.activity_main.*
 import library.minimize.com.chronometerpersist.ChronometerPersist
 import permissions.dispatcher.NeedsPermission
 import permissions.dispatcher.RuntimePermissions
@@ -30,12 +30,14 @@ class MainActivity : AppCompatActivity() {
     private lateinit var observableAudioRecorder: ObservableAudioRecorder
 
     private lateinit var chronometerPersist: ChronometerPersist
+    private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        chronometerPersist = ChronometerPersist.getInstance(chronometer, "abc", getSharedPreferences("Prefs", Context.MODE_PRIVATE))
+        chronometerPersist = ChronometerPersist.getInstance(binding.chronometer, "abc", getSharedPreferences("Prefs", Context.MODE_PRIVATE))
         filePath = this.externalCacheDir?.absolutePath + FILE_NAME
 
         observableAudioRecorder = ObservableAudioRecorder.Builder(MediaRecorder.AudioSource.CAMCORDER)
@@ -43,9 +45,9 @@ class MainActivity : AppCompatActivity() {
                 .findBestAudioRate()
                 .build()
 
-        textViewAudioFormat.text = observableAudioRecorder.toString()
+        binding.textViewAudioFormat.text = observableAudioRecorder.toString()
 
-        buttonRecord.setOnClickListener {
+        binding.buttonRecord.setOnClickListener {
             //toggleRecordingWithPermissionCheck()
         }
 
@@ -60,8 +62,8 @@ class MainActivity : AppCompatActivity() {
                     }
                 }) { throwable -> Log.e("Error", "${throwable.message}") }
 
-        buttonPlay.visibility = View.GONE
-        buttonPlay.setOnClickListener { playFile() }
+        binding.buttonPlay.visibility = View.GONE
+        binding.buttonPlay.setOnClickListener { playFile() }
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
@@ -78,11 +80,11 @@ class MainActivity : AppCompatActivity() {
     @SuppressLint("SetTextI18n")
     @NeedsPermission(Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE)
     internal fun toggleRecording() {
-        buttonPlay.visibility = View.VISIBLE
+        binding.buttonPlay.visibility = View.VISIBLE
         if (observableAudioRecorder.isRecording()) {
-            buttonPlay.isEnabled = true
+            binding.buttonPlay.isEnabled = true
             try {
-                buttonRecord.text = "Record"
+                binding.buttonRecord.text = "Record"
                 observableAudioRecorder.stop()
                 //helper method for closing the dataStream, also writes the wave header
                 observableAudioRecorder.completeRecording()
@@ -90,13 +92,13 @@ class MainActivity : AppCompatActivity() {
                 Log.e("Recorder", "IOException")
             }
 
-            buttonPlay.text = "Play"
+            binding.buttonPlay.text = "Play"
             chronometerPersist.stopChronometer()
         } else {
-            buttonPlay.isEnabled = false
+            binding.buttonPlay.isEnabled = false
             try {
                 observableAudioRecorder.start()
-                buttonRecord.text = "Stop"
+                binding.buttonRecord.text = "Stop"
             } catch (e: FileNotFoundException) {
                 Log.e("Recorder Error", "FileNotFoundException")
             }
