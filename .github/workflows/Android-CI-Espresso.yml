@@ -11,7 +11,7 @@ on:
 jobs:
   build:
     name: build pull request
-    runs-on: macOS-latest
+    runs-on: macOS-13
     strategy:
       matrix:
         java_version: [ 17 ]
@@ -23,18 +23,18 @@ jobs:
         with:
           distribution: "adopt"
           java-version: ${{ matrix.java_version }}
-      - uses: gradle/wrapper-validation-action@v3
+      - uses: gradle/actions/wrapper-validation@v3
       - name: Install Android SDK
-        uses: malinskiy/action-android/install-sdk@release/0.1.4
+        uses: hannesa2/action-android/install-sdk@0.1.16.5
       - name: Build project
         run: ./gradlew build
       - name: Run tests
         run: ./gradlew test
       - name: Run instrumentation tests
-        uses: malinskiy/action-android/emulator-run-cmd@release/0.1.4
+        uses: hannesa2/action-android/emulator-run-cmd@0.1.16.5
         with:
           cmd: ./gradlew cAT
-          api: 21
+          api: 28
           tag: default
           abi: x86
           cmdOptions: -noaudio -no-boot-anim -no-window
