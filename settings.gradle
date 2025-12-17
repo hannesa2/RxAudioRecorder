@@ -1,1 +1,2 @@
-include ':sample', ':RxAudioLib'
+include ":app"
+include ":RxAudioLib"
