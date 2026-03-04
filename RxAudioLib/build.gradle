@@ -5,10 +5,11 @@ plugins {
 }
 
 android {
+    namespace "info.audio.rxrecorder"
     defaultConfig {
         minSdkVersion 21
-        compileSdk 35
-        targetSdkVersion 35
+        compileSdk 36
+        targetSdkVersion 36
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
@@ -29,8 +30,9 @@ android {
     lint {
         disable "MissingPermission"
     }
-    namespace "info.audio.rxrecorder"
-
+    publishing {
+        singleVariant("release") {}
+    }
 }
 
 dependencies {
