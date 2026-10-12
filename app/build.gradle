@@ -6,7 +6,7 @@ android {
     namespace "info.audio.rxrecorder.demo"
     defaultConfig {
         applicationId "info.audio.rxrecorder.demo"
-        minSdkVersion 21
+        minSdkVersion 23
         compileSdk 36
         versionCode 1
         versionName "1.1"
